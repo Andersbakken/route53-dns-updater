@@ -3,4 +3,5 @@ Description=Route 53 DNS Updater
 
 [Service]
 Type=simple
-ExecStart=/path/to/route53-dns-updater.js
+ExecStart=/path/to/route53-dns-updater.js --access-key-id <ACCESS_KEY> --secret-access-key <SECRET_ACCESS_KEY> --domain-name <DOMAIN>
+
