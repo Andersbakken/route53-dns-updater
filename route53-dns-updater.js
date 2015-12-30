@@ -9,6 +9,18 @@ var commander = require('commander');
 
 var route53;
 
+function error()
+{
+    if (!commander.silent)
+        console.error.apply(console, arguments);
+}
+
+function log()
+{
+    if (!commander.silent)
+        console.log.apply(console, arguments);
+}
+
 function zoneId(domain, cb) {
     route53.listHostedZonesByName({ DNSName: domain }, function(err, data) {
         if (err) {
@@ -16,7 +28,7 @@ function zoneId(domain, cb) {
             return;
         }
         var id = safe.query(data, 'HostedZones[0].Id');
-        // console.log(data);
+        // log(data);
         if (!id) {
             cb(new Error('Id not found ' + safe.error));
             return;
@@ -49,7 +61,7 @@ function setIp(hostedZoneId, domain, cb) {
             }
         };
 
-        route53.changeResourceRecordSets(params, cb);
+        route53.changeResourceRecordSets(params, function(error) { cb(error, ip); });
     });
 }
 
@@ -71,6 +83,7 @@ if (require.main === module) {
         .option('-d, --domain-name [arg]', 'Domain name for route53')
         .option('-r, --region [arg]', 'Region for route53 (default us-west-1)', 'us-west-1')
         .option('-a, --access-key-id [arg]', 'Access key for route53')
+        .option('-S, --silent', 'Be silent')
         .option('-s, --secret-access-key [arg]', 'Secret access key for route53')
         .parse(process.argv);
     var params = {
@@ -79,17 +92,20 @@ if (require.main === module) {
         secretAccessKey: commander.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
         region: commander.region || process.env.AWS_REGION
     };
-    // console.log(params);
+    // log(params);
     for (var key in params) {
         if (!params[key]) {
             commander.outputHelp();
-            console.error('Missing ' + key);
+            error('Missing ' + key);
             process.exit(1);
         }
     }
-    update(params, function(err) {
-        if (err)
-            console.error(err);
+    update(params, function(err, ip) {
+        if (err) {
+            error(err);
+        } else {
+            log('Set host: %s to ip: %s', params.domain, ip);
+        }
         process.exit(err ? 3 : 0);
     });
 }
