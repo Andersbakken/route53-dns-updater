@@ -1,0 +1,7 @@
+[Unit]
+Description=Route 53 DNS Updater
+
+[Service]
+Type=simple
+ExecStart=/path/to/script
+Description=Route 53 DNS Updater

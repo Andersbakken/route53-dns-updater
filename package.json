@@ -1,0 +1,17 @@
+{
+  "name": "ipupdater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ipupdater.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "'",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1.45",
+    "commander": "^2.8.1",
+    "safetydance": "0.0.19",
+    "superagent": "^1.3.0"
+  }
+}
